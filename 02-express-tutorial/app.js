@@ -17,6 +17,9 @@ app.get("/api/v1/products/", (req, res) => {
 
 app.get("/api/v1/query", (req, res) => {
     const response = products.filter((product) => {
+        if (!req.query.search) {
+            return true;
+        }
         if (product.name.startsWith(req.query.search)) {
             return true;
         }
