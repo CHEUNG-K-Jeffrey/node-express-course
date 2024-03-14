@@ -23,6 +23,13 @@ app.get("/api/v1/query", (req, res) => {
         if (product.name.startsWith(req.query.search)) {
             return true;
         }
+    }).filter((product) => {
+        if (!req.query.maxPrice) {
+            return true;
+        }
+        if( req.query.maxPrice && product.price <= Number(req.query.maxPrice)) {
+            return true;
+        }
     }).slice(0, req.query.limit);
     res.json(response);
 });
