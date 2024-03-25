@@ -8,24 +8,21 @@ const {
   deletePerson,
 } = require("../controllers/people.js");
 
-router.get("/:id", (req, res) => {
-  getPerson(req, res);
-});
-
-router.put("/:id", (req, res) => {
-  updatePerson(req, res);
-});
-
-router.delete("/:id", (req, res) => {
-  deletePerson(req, res);
-});
-
-router.get("/", (req, res) => {
-  getPeople(req, res);
-});
-
-router.post("/", (req, res) => {
-  addPerson(req, res);
-});
+router
+  .get("/:id", (req, res) => {
+    getPerson(req, res);
+  })
+  .put("/:id", (req, res) => {
+    updatePerson(req, res);
+  })
+  .delete("/:id", (req, res) => {
+    deletePerson(req, res);
+  })
+  .get("/", (req, res) => {
+    getPeople(req, res);
+  })
+  .post("/", (req, res) => {
+    addPerson(req, res);
+  });
 
 module.exports = router;
