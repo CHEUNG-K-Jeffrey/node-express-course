@@ -1,0 +1,13 @@
+1. In this lesson, I created a middleware function called asyncWrapper. It is a better solution to try and catch blocks.
+
+2.
+const getTask = asyncWrapper(async (req, res, next) => {  
+  const { id: taskID } = req.params;  
+  const task = await Task.findOne({ _id: taskID });  
+  if (!task) {  
+    const {createCustomError} = require("../errors/custom-error");
+    const error = createCustomError("Not Found", 404);
+    return next(error);
+  }  
+  res.status(200).json({ task });  
+});  
