@@ -57,13 +57,13 @@ app.get("/api/v1/products", async (req, res) => {
 
     let results = products;
 
-    results = filterByProductName(results, query.search);
+    results = filterByProductName(results, query?.search);
 
-    results = filterByDescription(results, query.desc);
+    results = filterByDescription(results, query?.desc);
 
-    results = filterByMinPrice(results, query.minPrice);
+    results = filterByMinPrice(results, query?.minPrice);
 
-    results = filterByMaxPrice(results, query.maxPrice);
+    results = filterByMaxPrice(results, query?.maxPrice);
 
     let resultFragment = "";
     results.forEach(
