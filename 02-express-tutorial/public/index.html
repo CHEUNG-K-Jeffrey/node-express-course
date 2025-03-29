@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dream the Code Shop</title>
+    <script
+      type="module"
+      src="https://cdn.jsdelivr.net/gh/starfederation/datastar@v1.0.0-beta.10/bundles/datastar.js"
+    ></script>
+    <script
+      src="https://kit.fontawesome.com/ca68ff0df8.js"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body style="display: flex; flex-direction: column">
+    <div
+      style="
+        display: flex;
+        align-items: center;
+        height: 10%;
+        background-color: aliceblue;
+        justify-content: space-between;
+      "
+    >
+      <span>
+        <span
+          style="color: rgb(0, 95, 179); padding: 1em"
+          class="fa-solid fa-shop"
+        ></span>
+        <span style="font-size: large; color: rgb(0, 76, 143)"
+          >Dream the Code</span
+        >
+      </span>
+    </div>
+    <div style="display: flex; flex-direction: column">
+      <input
+        data-bind-search
+        data-on-input__debounce.1000ms="@get('/api/v1/products')"
+        placeholder="name"
+        type="search"
+      />
+      <input
+        data-bind-desc
+        data-on-input__debounce.1000ms="@get('/api/v1/products')"
+        placeholder="name"
+        type="search"
+      />
+      <input
+        data-bind="minPrice"
+        data-on-input__debounce.1000ms="@get('/api/v1/products')"
+        placeholder="minimum price"
+        type="number"
+        value="0"
+      />
+      <input
+        data-bind="maxPrice"
+        data-on-input__debounce.1000ms="@get('/api/v1/products')"
+        placeholder="maximum price"
+        type="number"
+        value="100"
+      />
+      <button data-on-click="@get('/api/v1/products')">Get Products</button>
+      <div id="results"></div>
+    </div>
+  </body>
+</html>
