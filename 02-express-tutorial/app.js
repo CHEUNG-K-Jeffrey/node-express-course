@@ -1,3 +1,4 @@
+//@ts-check
 import express from "express";
 import productQuery from "./controller/product-query.js";
 import { products } from "./data.cjs";
@@ -14,11 +15,11 @@ app.get("/api/v1/products", async (req, res) => {
     headers["datastar-request"] === "true"
   ) {
     const sse = ServerSentEventGenerator(req, res);
-
     let query;
+
     if (req.query?.datastar) {
       try {
-        query = JSON.parse(req.query.datastar);
+        query = JSON.parse(/** @type {string} */ (req.query.datastar));
       } catch (error) {
         console.error(error);
       }
@@ -54,11 +55,13 @@ app.get("/api/v1/products/:productID", async (req, res) => {
   return res.json(product);
 });
 app.get("/api/v1/query", async (req, res) => {
-  let results = productQuery;
+  let results = productQuery(
+    /**@type {import("./controller/product-query.js").Query}*/ (req.query)
+  );
 
   // Limit the number of results
   if (req.query.limit) {
-    results = results.slice(0, req.query.limit);
+    results = results.slice(0, +req.query.limit);
   }
 
   return res.json(results);

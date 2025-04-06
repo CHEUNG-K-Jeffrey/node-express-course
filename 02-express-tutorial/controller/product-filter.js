@@ -1,3 +1,4 @@
+//@ts-check
 /**
  * @typedef {Object} Product
  * @property {number} id
