@@ -8,6 +8,13 @@ const app = express();
 console.log("Express Tutorial");
 app.use(express.static("./public"));
 
+const logger = (req, res, next) => {
+  console.log(`${new Date()} ${req.method} ${req.url}`);
+  next();
+};
+
+app.use(logger);
+
 app.get("/api/v1/products", async (req, res) => {
   const headers = req.headers;
   if (
