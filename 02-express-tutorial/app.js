@@ -1,12 +1,14 @@
 //@ts-check
 import express from "express";
 import productQuery from "./controller/product-query.js";
-import { products } from "./data.cjs";
+import { products, people } from "./data.cjs";
 import { ServerSentEventGenerator } from "datastar-ssegen";
 
 const app = express();
 console.log("Express Tutorial");
-app.use(express.static("./public"));
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
+app.use(express.static("./methods-public"));
 
 const logger = (req, res, next) => {
   console.log(`${new Date()} ${req.method} ${req.url}`);
@@ -74,6 +76,25 @@ app.get("/api/v1/query", async (req, res) => {
   return res.json(results);
 });
 app.get("/api/v1/test", (_req, res) => res.json({ message: "It worked!" }));
+
+// Handle broken axios client in methods-public/
+app.all("/api/people", async (_req, res) => {
+  return res.redirect("/api/v1/people");
+});
+
+app.get("/api/v1/people", async (_req, res) => {
+  console.log(_req.headers.forwarded);
+  return res.json({ data: people });
+});
+app.post("/api/v1/people", async (req, res) => {
+  if (!req.body.name) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Please provide a name" });
+  }
+  people.push({ id: people.length + 1, name: req.body.name });
+  res.status(201).json({ success: true, name: req.body.name });
+});
 app.all("/*", (_req, res) => {
   res.sendStatus(404);
 });
