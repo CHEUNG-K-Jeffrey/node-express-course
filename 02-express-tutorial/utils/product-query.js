@@ -1,6 +1,6 @@
 //@ts-check
 import { products } from "../data.cjs";
-import ProductFilter from "../controller/product-filter.js";
+import ProductFilter from "./product-filter.js";
 
 /**
  * @typedef {object} Query

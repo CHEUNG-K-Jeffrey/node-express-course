@@ -1,8 +1,12 @@
 //@ts-check
+/**
+ * @import {Request, Response, NextFunction} from "express";
+ * @import {Query} from "./utils/product-query.js"
+ */
 import express from "express";
-import productQuery from "./controller/product-query.js";
-import { products, people } from "./data.cjs";
-import { ServerSentEventGenerator } from "datastar-ssegen";
+import productQuery from "./utils/product-query.js";
+import productsRouter from "./routes/products.js";
+import peopleRouter from "./routes/people.js";
 
 const app = express();
 console.log("Express Tutorial");
@@ -10,6 +14,12 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(express.static("./methods-public"));
 
+/**
+ * Logs a message on a request
+ * @param {Request} req
+ * @param {Response} res
+ * @param {NextFunction} next
+ */
 const logger = (req, res, next) => {
   console.log(`${new Date()} ${req.method} ${req.url}`);
   next();
@@ -17,56 +27,9 @@ const logger = (req, res, next) => {
 
 app.use(logger);
 
-app.get("/api/v1/products", async (req, res) => {
-  const headers = req.headers;
-  if (
-    headers.accept === "text/event-stream" &&
-    headers["datastar-request"] === "true"
-  ) {
-    const sse = ServerSentEventGenerator(req, res);
-    let query;
-
-    if (req.query?.datastar) {
-      try {
-        query = JSON.parse(/** @type {string} */ (req.query.datastar));
-      } catch (error) {
-        console.error(error);
-      }
-    }
-
-    let results = productQuery(query);
-
-    let resultFragment = "";
-    results.forEach(
-      (product) =>
-        (resultFragment += `<div id="product-${product.id}"> <img src="${product.image}"/> ${product.name} $${product.price}
-          <div>${product.desc}</div></div>`)
-    );
-    sse.MergeFragments(`
-      <div id="results">${resultFragment}</div>
-      `);
-    return res.end();
-  }
-  return res.json(products);
-});
-
-app.get("/api/v1/products/:productID", async (req, res) => {
-  const product = products.find(
-    (product) => product.id === +req.params.productID
-  );
-
-  // Product guard statement
-  if (!product) {
-    return res.status(404).json({ message: "That product was not found." });
-  }
-
-  // Passed guard
-  return res.json(product);
-});
+app.use("/api/v1/products", productsRouter);
 app.get("/api/v1/query", async (req, res) => {
-  let results = productQuery(
-    /**@type {import("./controller/product-query.js").Query}*/ (req.query)
-  );
+  let results = productQuery(/**@type {Query}*/ (req.query));
 
   // Limit the number of results
   if (req.query.limit) {
@@ -82,21 +45,10 @@ app.all("/api/people", async (_req, res) => {
   return res.redirect("/api/v1/people");
 });
 
-app.get("/api/v1/people", async (_req, res) => {
-  console.log(_req.headers.forwarded);
-  return res.json({ data: people });
-});
-app.post("/api/v1/people", async (req, res) => {
-  if (!req.body.name) {
-    return res
-      .status(400)
-      .json({ success: false, message: "Please provide a name" });
-  }
-  people.push({ id: people.length + 1, name: req.body.name });
-  res.status(201).json({ success: true, name: req.body.name });
-});
+app.use("/api/v1/people", peopleRouter);
+
 app.all("/*", (_req, res) => {
-  res.sendStatus(404);
+  res.sendStatus(500);
 });
 
 app.listen(3000);
